@@ -1,0 +1,33 @@
+<h3>Register</h3>
+
+<form method = "POST" action ="/user">
+    Username:
+    <br>
+    <input type = "text" name = "username" value = "@ViewBag.User?.Username" required/> 
+    <br>
+    
+    Email:
+    <br>
+    <input type = "email" name = "Email" value = "@ViewBag.User?.Email" required/>
+    <br>
+    
+    Password:
+    <br>
+    <input type = "password" name = "Password" required/>
+    <br>
+
+    Verify Password:
+    <br>
+    <input type = "password" name = "verify" required/>
+    <br>
+    @if (ViewBag.Error != null)
+    {
+        <span style = "color: darkred">@ViewBag.Error</span>
+        <br>
+    }
+
+    <button type = "submit">Submit</button>
+</form>
+
+
+@* value on input keeps user info in text box if password is incorrect *@
