@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using SpaDay6.Models;
+using SpaDay6.ViewModel;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,26 +18,44 @@ namespace SpaDay6.Controllers
             return View();
         }
 
+        [HttpGet("/add")]
         public IActionResult Add()
         {
-            return View();
+            //Passing an instance of AddUserViewModel to User/Add.cshtml via Add() action method
+            AddUserViewModel addUserViewModel = new();
+            return View(addUserViewModel);
         }
 
         [HttpPost]
         [Route("/user")]
-        public IActionResult SubmitAddUserForm(User newUser, string verify)
+        public IActionResult SubmitAddUserForm(AddUserViewModel addUserViewModel)
         {
-            if (newUser.Password == verify)
+            //ModelState.IsValid is checking the conditions outlined using the validation attributes and if valid will return the page back to Index
+            if (ModelState.IsValid)
             {
-                ViewBag.user = newUser;
-                return View("Index");
+                //This checks the passwords are matching and if they are then creates a new user and adds their username, password, and email, and sends them to the Index page
+                if(addUserViewModel.Password == addUserViewModel.VerifyPassword)
+                {
+                    User newUser = new()
+                    {
+                        Username = addUserViewModel.Username,
+                        Password = addUserViewModel.Password,
+                        Email = addUserViewModel.Email
+                    };
+                    return View("Index", newUser);
+                }
+                else
+                {
+                    //If the user's password does not match then it sends the user back to the Add.cshtml page
+                    ViewBag.error = "Passwords do not match.";
+                    return View("Add", addUserViewModel);
+                }
+                
             }
             else
             {
-                ViewBag.error = "Passwords do not match! Try again!";
-                ViewBag.userName = newUser.Username;
-                ViewBag.eMail = newUser.Email;
-                return View("Add");
+                //If the conditions are not valid it will return back to Add.cshtml page
+                return View("Add", addUserViewModel);
             }
         }
     }
